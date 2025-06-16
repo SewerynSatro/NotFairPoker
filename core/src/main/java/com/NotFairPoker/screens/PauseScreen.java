@@ -43,7 +43,7 @@ public class PauseScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         // Wczytanie grafik
-        bgTex = new Texture(Gdx.files.internal("poker_table_bg.png"));
+        bgTex = new Texture(Gdx.files.internal("pause_bg.png"));
         resumeTex = new Texture(Gdx.files.internal("buttons/resume.png"));
         newGameTex = new Texture(Gdx.files.internal("buttons/newgame.png"));
         menuTex = new Texture(Gdx.files.internal("buttons/menu.png"));
@@ -134,7 +134,7 @@ public class PauseScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(bgTex, 1920 / 2f - 400, 1080 / 2f - 400, 800, 800);
+        batch.draw(bgTex,0, 0);
         batch.end();
         stage.act();
         stage.draw();

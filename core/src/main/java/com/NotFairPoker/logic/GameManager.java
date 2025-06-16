@@ -266,6 +266,7 @@ public class GameManager {
         System.out.println("-------------------------------------------------");
 
         gameState = GameState.SHOWDOWN;
+        isShowdownAfterFold = false;
 
         if (player.chips <= 0 || bot.chips <= 0) {
             gameOver = true;

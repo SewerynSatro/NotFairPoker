@@ -111,9 +111,14 @@ public class PauseScreen implements Screen {
 
         musicButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
-                SoundManager.getInstance().playClick();
-                MusicManager.getInstance().toggleMusic();
-                musicButton.getStyle().imageUp = new TextureRegionDrawable(MusicManager.getInstance().isMusicEnabled() ? musicOnTex : musicOffTex);
+                boolean enabled = !MusicManager.getInstance().isMusicEnabled();
+                MusicManager.getInstance().setMusicEnabled(enabled);
+                musicButton.getStyle().imageUp = new TextureRegionDrawable(
+                    enabled ? musicOnTex : musicOffTex
+                );
+                if (enabled) {
+                    MusicManager.getInstance().playGameMusic();
+                }
             }
         });
 

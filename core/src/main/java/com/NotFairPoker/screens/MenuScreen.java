@@ -25,13 +25,15 @@ public class MenuScreen implements Screen {
 
     private int selectedAvatar = 1;
 
-    private Texture avatar1Tex, avatar2Tex;
+    private Texture jakeActiveTex, jakeInactiveTex;
+    private Texture lucyActiveTex, lucyInactiveTex;
     private Texture startButtonTex;
     private Texture exitButtonTex;
     private Texture musicOnTex, musicOffTex;
     private Texture soundOnTex, soundOffTex;
+    private Texture menuBackgroundTex;
 
-    private ImageButton avatarButton1, avatarButton2, startButton, exitButton;
+    private ImageButton jakeButton, lucyButton, startButton, exitButton;
     private ImageButton musicToggleButton, soundToggleButton;
 
     public MenuScreen(Main game) {
@@ -49,41 +51,48 @@ public class MenuScreen implements Screen {
 
         MusicManager.getInstance().playMenuMusic();
 
-        avatar1Tex = new Texture(Gdx.files.internal("avatars/1.png"));
-        avatar2Tex = new Texture(Gdx.files.internal("avatars/2.png"));
-        startButtonTex = new Texture(Gdx.files.internal("buttons/startgame.png"));
-        exitButtonTex = new Texture(Gdx.files.internal("buttons/exit.png"));
-        musicOnTex = new Texture(Gdx.files.internal("buttons/music_on.png"));
-        musicOffTex = new Texture(Gdx.files.internal("buttons/music_off.png"));
-        soundOnTex = new Texture(Gdx.files.internal("buttons/sound_on.png"));
-        soundOffTex = new Texture(Gdx.files.internal("buttons/sound_off.png"));
+        menuBackgroundTex = new Texture(Gdx.files.internal("menu_bg.png"));
+        jakeActiveTex = new Texture(Gdx.files.internal("menu/1.png"));
+        jakeInactiveTex = new Texture(Gdx.files.internal("menu/1b.png"));
+        lucyActiveTex = new Texture(Gdx.files.internal("menu/2.png"));
+        lucyInactiveTex = new Texture(Gdx.files.internal("menu/2b.png"));
+        startButtonTex = new Texture(Gdx.files.internal("menu/startgame.png"));
+        exitButtonTex = new Texture(Gdx.files.internal("menu/exit.png"));
+        musicOnTex = new Texture(Gdx.files.internal("menu/music_on.png"));
+        musicOffTex = new Texture(Gdx.files.internal("menu/music_off.png"));
+        soundOnTex = new Texture(Gdx.files.internal("menu/sound_on.png"));
+        soundOffTex = new Texture(Gdx.files.internal("menu/sound_off.png"));
 
-        avatarButton1 = new ImageButton(new TextureRegionDrawable(avatar1Tex));
-        avatarButton2 = new ImageButton(new TextureRegionDrawable(avatar2Tex));
+        jakeButton = new ImageButton(new TextureRegionDrawable(jakeActiveTex));
+        lucyButton = new ImageButton(new TextureRegionDrawable(lucyInactiveTex));
         startButton = new ImageButton(new TextureRegionDrawable(startButtonTex));
         exitButton = new ImageButton(new TextureRegionDrawable(exitButtonTex));
         musicToggleButton = new ImageButton(new TextureRegionDrawable(MusicManager.getInstance().isMusicEnabled() ? musicOnTex : musicOffTex));
         soundToggleButton = new ImageButton(new TextureRegionDrawable(SoundManager.getInstance().isSoundEnabled() ? soundOnTex : soundOffTex));
 
-        avatarButton1.setPosition(300, 300);
-        avatarButton2.setPosition(600, 300);
-        startButton.setPosition(450, 100);
-        exitButton.setPosition(450, 20);
-        musicToggleButton.setPosition(50, 50);
-        soundToggleButton.setPosition(150, 50);
+        jakeButton.setPosition(0, 0);
+        lucyButton.setPosition(1320, 0);
+        startButton.setPosition(810, 400);
+        exitButton.setPosition(810, 270);
+        musicToggleButton.setPosition(810, 140);
+        soundToggleButton.setPosition(1010, 140);
 
-        avatarButton1.addListener(new ClickListener() {
+        jakeButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 selectedAvatar = 1;
                 SoundManager.getInstance().playClick();
+                updateAvatarSelection();
             }
         });
-        avatarButton2.addListener(new ClickListener() {
+
+        lucyButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 selectedAvatar = 2;
                 SoundManager.getInstance().playClick();
+                updateAvatarSelection();
             }
         });
+
         startButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 SoundManager.getInstance().playClick();
@@ -91,12 +100,14 @@ public class MenuScreen implements Screen {
                 game.setScreen(new TableScreen(game, playerName, selectedAvatar));
             }
         });
+
         exitButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 SoundManager.getInstance().playClick();
                 Gdx.app.exit();
             }
         });
+
         musicToggleButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 SoundManager.getInstance().playClick();
@@ -104,12 +115,13 @@ public class MenuScreen implements Screen {
                 MusicManager.getInstance().setMusicEnabled(enabled);
 
                 if (enabled) {
-                    MusicManager.getInstance().playMenuMusic();  // Bo jesteśmy w menu screen
+                    MusicManager.getInstance().playMenuMusic();
                 }
 
                 musicToggleButton.getStyle().imageUp = new TextureRegionDrawable(enabled ? musicOnTex : musicOffTex);
             }
         });
+
         soundToggleButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 boolean enabled = !SoundManager.getInstance().isSoundEnabled();
@@ -118,12 +130,24 @@ public class MenuScreen implements Screen {
             }
         });
 
-        stage.addActor(avatarButton1);
-        stage.addActor(avatarButton2);
+        stage.addActor(jakeButton);
+        stage.addActor(lucyButton);
         stage.addActor(startButton);
         stage.addActor(exitButton);
         stage.addActor(musicToggleButton);
         stage.addActor(soundToggleButton);
+
+        updateAvatarSelection();
+    }
+
+    private void updateAvatarSelection() {
+        if (selectedAvatar == 1) {
+            jakeButton.getStyle().imageUp = new TextureRegionDrawable(jakeActiveTex);
+            lucyButton.getStyle().imageUp = new TextureRegionDrawable(lucyInactiveTex);
+        } else {
+            jakeButton.getStyle().imageUp = new TextureRegionDrawable(jakeInactiveTex);
+            lucyButton.getStyle().imageUp = new TextureRegionDrawable(lucyActiveTex);
+        }
     }
 
     @Override
@@ -131,8 +155,9 @@ public class MenuScreen implements Screen {
         ScreenUtils.clear(0, 0.3f, 0.1f, 1);
 
         batch.begin();
-        font.draw(batch, "Select your avatar:", 400, 600);
-        font.draw(batch, "Selected: " + (selectedAvatar == 1 ? "Jack" : "Lucy"), 400, 550);
+        batch.draw(menuBackgroundTex, 0, 0);
+        //font.draw(batch, "Select your avatar:", 400, 600);
+        //font.draw(batch, "Selected: " + (selectedAvatar == 1 ? "Jack" : "Lucy"), 400, 550);
         batch.end();
 
         stage.act(delta);
@@ -148,14 +173,17 @@ public class MenuScreen implements Screen {
     public void dispose() {
         batch.dispose();
         font.dispose();
-        avatar1Tex.dispose();
-        avatar2Tex.dispose();
+        jakeActiveTex.dispose();
+        jakeInactiveTex.dispose();
+        lucyActiveTex.dispose();
+        lucyInactiveTex.dispose();
         startButtonTex.dispose();
         exitButtonTex.dispose();
         musicOnTex.dispose();
         musicOffTex.dispose();
         soundOnTex.dispose();
         soundOffTex.dispose();
+        menuBackgroundTex.dispose();
         stage.dispose();
     }
 }

@@ -27,7 +27,7 @@ public class TableScreen implements Screen {
     private BitmapFont font;
     private Texture tableBg, avatarPlayer, avatarBot, cardBack, dealer;
     private Texture playerCard1, playerCard2, botCard1, botCard2;
-    private Texture sliderBgTex, sliderKnobTex, confirmRaiseTex;
+    private Texture sliderBg, sliderKnob, confirmRaise;
     private List<Texture> communityTextures = new ArrayList<>();
 
     private Stage stage;
@@ -62,9 +62,9 @@ public class TableScreen implements Screen {
             avatarBot = new Texture(Gdx.files.internal("avatars/3.png"));
             cardBack = new Texture(Gdx.files.internal("cards/card_back.png"));
 
-            sliderBgTex = new Texture(Gdx.files.internal("slider_bg.png"));
-            sliderKnobTex = new Texture(Gdx.files.internal("slider_knob.png"));
-            confirmRaiseTex = new Texture(Gdx.files.internal("buttons/confirm.png"));
+            sliderBg = new Texture(Gdx.files.internal("slider_bg.png"));
+            sliderKnob = new Texture(Gdx.files.internal("slider_knob.png"));
+            confirmRaise = new Texture(Gdx.files.internal("buttons/confirm.png"));
             dealer = new Texture(Gdx.files.internal("dealer.png"));
 
             stage = new Stage(new ScreenViewport());
@@ -184,8 +184,8 @@ public class TableScreen implements Screen {
         if (confirmRaiseButton != null) confirmRaiseButton.remove();
 
         raiseSlider = new Slider(20, gameManager.getPlayerChips(), 10, false, new Slider.SliderStyle(
-            new TextureRegionDrawable(new TextureRegion(sliderBgTex)),
-            new TextureRegionDrawable(new TextureRegion(sliderKnobTex))
+            new TextureRegionDrawable(new TextureRegion(sliderBg)),
+            new TextureRegionDrawable(new TextureRegion(sliderKnob))
         ));
         raiseSlider.setValue(20);
         raiseSlider.setPosition(210, 400);
@@ -197,7 +197,7 @@ public class TableScreen implements Screen {
             return false;
         });
 
-        confirmRaiseButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(confirmRaiseTex)));
+        confirmRaiseButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(confirmRaise)));
         confirmRaiseButton.setPosition(530, 400);
         confirmRaiseButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {

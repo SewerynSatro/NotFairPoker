@@ -143,7 +143,7 @@ public class TableScreen implements Screen {
         callButton.setPosition(xButton, yButton + 200);
         raiseButton.setPosition(xButton, yButton + 100);
         foldButton.setPosition(xButton, yButton);
-        pauseButton.setPosition(1700, 100);
+        pauseButton.setPosition(1710, 50);
 
         checkButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
@@ -302,7 +302,7 @@ public class TableScreen implements Screen {
     private void createNewHandButton() {
         Texture newHandTex = new Texture(Gdx.files.internal("buttons/newhand.png"));
         newHandButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(newHandTex)));
-        newHandButton.setPosition(900, 50);
+        newHandButton.setPosition(802, 679);
         newHandButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 playClickSound();
@@ -318,9 +318,9 @@ public class TableScreen implements Screen {
     }
 
     private void createRestartButton() {
-        Texture restartTex = new Texture(Gdx.files.internal("buttons/restart.png"));
+        Texture restartTex = new Texture(Gdx.files.internal("pause/newgame.png"));
         restartButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(restartTex)));
-        restartButton.setPosition(900, 150);
+        restartButton.setPosition(802, 679);
         restartButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 playClickSound();
@@ -450,7 +450,7 @@ public class TableScreen implements Screen {
         font.draw(batch, "" + gameManager.getBotChips(), 1580, 980);
         font.draw(batch, "" + gameManager.getLastPlayerBet(), 310, 115);
         font.draw(batch, "" + gameManager.getLastBotBet(), 1580, 895);
-        font.draw(batch, "CURRENT POT: " + gameManager.getPot(), 900, 860);
+        font.draw(batch, "" + gameManager.getPot(), 940, 725);
 
         if (gameManager.isPlayerSmallBlind()) {
             batch.draw(dealer, 50, 230);
@@ -478,17 +478,19 @@ public class TableScreen implements Screen {
 
         // WYŚWIETL komunikat o złapaniu cheatera - zamiana na asa
         if (cheatCaught && gameManager.getGameState() == GameState.SHOWDOWN) {
-            font.getData().setScale(3f);
+            font.getData().setScale(2f);
             font.setColor(Color.RED);
-            font.draw(batch, "Zostałeś złapany na cheatowaniu!\nBot wygrywa całą pulę!", 350, 400);
+            font.draw(batch, "Your sleight of hand failed.", 780, 370);
+            font.draw(batch, "The opponent caught you red-handed and claims the pot.", 600, 340);
             font.getData().setScale(2f);
             font.setColor(Color.WHITE);
         }
         // WYŚWIETL komunikat o złapaniu przy podglądaniu
         if (peekCheatCaught && gameManager.getGameState() == GameState.SHOWDOWN) {
-            font.getData().setScale(3f);
-            font.setColor(Color.ORANGE);
-            font.draw(batch, "Bot złapał Cię na podglądaniu karty!\nBot wygrywa całą pulę!", 350, 330);
+            font.getData().setScale(2f);
+            font.setColor(Color.RED);
+            font.draw(batch, "You were caught sneaking a peek.", 720, 370);
+            font.draw(batch, "The opponent claims the entire pot.", 710, 340);
             font.getData().setScale(2f);
             font.setColor(Color.WHITE);
         }

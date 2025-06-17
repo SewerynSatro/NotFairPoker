@@ -64,6 +64,9 @@ public class GameManager {
         gameState = GameState.PRE_FLOP;
         pot = 0;
         resetBets();
+        if (tableScreen != null) {
+            tableScreen.setBotDecisionTexture(null);
+        }
 
         cheatCaughtThisHand = false;
         peekCheatCaught = false;

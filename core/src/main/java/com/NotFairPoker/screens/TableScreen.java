@@ -423,7 +423,7 @@ public class TableScreen implements Screen {
             callButton.setVisible(false);
             raiseButton.setVisible(false);
             foldButton.setVisible(false);
-            if (!gameManager.isShowdownAfterFold()) {
+            if (!gameManager.isShowdownAfterFold() && !gameManager.isCheatCaughtThisHand() && !gameManager.isPeekCheatCaught()) {
                 batch.draw(botCard1, 1320, 830, 160, 200);
                 batch.draw(botCard2, 1120, 830, 160, 200);
             } else {

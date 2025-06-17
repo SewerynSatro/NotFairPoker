@@ -9,7 +9,7 @@ public class Player {
 
     public Player(boolean isBot) {
         this.isBot = isBot;
-        this.chips = 200;
+        this.chips = 1000;
         this.hand = null;
     }
 

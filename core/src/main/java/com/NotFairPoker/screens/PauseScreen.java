@@ -44,17 +44,14 @@ public class PauseScreen implements Screen {
 
         // Wczytanie grafik
         bgTex = new Texture(Gdx.files.internal("pause_bg.png"));
-        resumeTex = new Texture(Gdx.files.internal("buttons/resume.png"));
-        newGameTex = new Texture(Gdx.files.internal("buttons/newgame.png"));
-        menuTex = new Texture(Gdx.files.internal("buttons/menu.png"));
-        exitTex = new Texture(Gdx.files.internal("buttons/exit.png"));
-        soundOnTex = new Texture(Gdx.files.internal("buttons/sound_on.png"));
-        soundOffTex = new Texture(Gdx.files.internal("buttons/sound_off.png"));
-        musicOnTex = new Texture(Gdx.files.internal("buttons/music_on.png"));
-        musicOffTex = new Texture(Gdx.files.internal("buttons/music_off.png"));
-
-        float centerX = 1920 / 2f - 300;
-        float centerY = 1080 / 2f - 300;
+        resumeTex = new Texture(Gdx.files.internal("pause/resume.png"));
+        newGameTex = new Texture(Gdx.files.internal("pause/newgame.png"));
+        menuTex = new Texture(Gdx.files.internal("pause/menu.png"));
+        exitTex = new Texture(Gdx.files.internal("menu/exit.png"));
+        soundOnTex = new Texture(Gdx.files.internal("menu/sound_on.png"));
+        soundOffTex = new Texture(Gdx.files.internal("menu/sound_off.png"));
+        musicOnTex = new Texture(Gdx.files.internal("menu/music_on.png"));
+        musicOffTex = new Texture(Gdx.files.internal("menu/music_off.png"));
 
         ImageButton resumeButton = new ImageButton(new TextureRegionDrawable(resumeTex));
         ImageButton newGameButton = new ImageButton(new TextureRegionDrawable(newGameTex));
@@ -64,12 +61,12 @@ public class PauseScreen implements Screen {
         soundButton = new ImageButton(new TextureRegionDrawable(SoundManager.getInstance().isSoundEnabled() ? soundOnTex : soundOffTex));
         musicButton = new ImageButton(new TextureRegionDrawable(MusicManager.getInstance().isMusicEnabled() ? musicOnTex : musicOffTex));
 
-        resumeButton.setPosition(centerX, centerY + 400);
-        newGameButton.setPosition(centerX, centerY + 300);
-        menuButton.setPosition(centerX, centerY + 200);
-        exitButton.setPosition(centerX, centerY + 100);
-        soundButton.setPosition(centerX + 320, centerY + 400);
-        musicButton.setPosition(centerX + 320, centerY + 300);
+        resumeButton.setPosition(810, 400);
+        newGameButton.setPosition(810, 270);
+        menuButton.setPosition(810, 140);
+        exitButton.setPosition(810, 10);
+        soundButton.setPosition(10, 10);
+        musicButton.setPosition(130, 10);
 
         resumeButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {

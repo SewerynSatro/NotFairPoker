@@ -5,6 +5,7 @@ import com.NotFairPoker.ai.BotLogic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import com.NotFairPoker.screens.TableScreen;
 
 public class GameManager {
     public enum PlayerAction { CHECK, CALL, RAISE, FOLD }
@@ -28,6 +29,7 @@ public class GameManager {
     private boolean lastAggressorIsPlayer = false;
     private boolean isShowdownAfterFold = false;
     private boolean gameOver = false;
+    private TableScreen tableScreen;
 
     private boolean cheatCaughtThisHand = false;
     private boolean peekCheatCaught = false;
@@ -42,13 +44,14 @@ public class GameManager {
     private int playerShowdownWins = 0;
     private int botShowdownWins = 0;
 
-    public GameManager() {
+    public GameManager(TableScreen tableScreen) {
         this.player = new Player(false);
         this.bot = new Player(true);
         this.communityCards = new ArrayList<>();
         this.pot = 0;
         this.playerIsSmallBlind = true;
         this.gameState = GameState.PRE_FLOP;
+        this.tableScreen = tableScreen;
     }
 
     public void startNewHand() {
@@ -74,6 +77,7 @@ public class GameManager {
             if (player.chips < SMALL_BLIND || bot.chips < BIG_BLIND) {
                 gameOver = true;
                 System.out.println("=== GAME OVER ===");
+                tableScreen.setBotDecisionTexture(null);
                 return;
             }
             player.chips -= SMALL_BLIND;
@@ -87,6 +91,7 @@ public class GameManager {
             if (player.chips < BIG_BLIND || bot.chips < SMALL_BLIND) {
                 gameOver = true;
                 System.out.println("=== GAME OVER ===");
+                tableScreen.setBotDecisionTexture(null);
                 return;
             }
             player.chips -= BIG_BLIND;
@@ -172,6 +177,7 @@ public class GameManager {
         switch (decision) {
             case CHECK -> {
                 System.out.println("BOT checks.");
+                tableScreen.setBotDecisionTexture("CHECK");
                 endTurn();
             }
             case CALL -> {
@@ -179,6 +185,7 @@ public class GameManager {
                 pot += callAmount;
                 lastBotBet += callAmount;
                 System.out.println("BOT calls " + callAmount);
+                tableScreen.setBotDecisionTexture("CALL");
                 waitingForResponse = false;
                 endTurn();
             }
@@ -192,12 +199,14 @@ public class GameManager {
                 currentBet = totalBet;
                 lastBotBet += toPay;
                 System.out.println("BOT raises to " + totalBet);
+                tableScreen.setBotDecisionTexture("RAISE");
                 waitingForResponse = true;
                 lastAggressorIsPlayer = false;
                 endTurn();
             }
             case FOLD -> {
                 System.out.println("BOT folds.");
+                tableScreen.setBotDecisionTexture("FOLD");
                 System.out.println("PLAYER wins the pot of " + pot + " chips.");
                 player.chips += pot;
                 isShowdownAfterFold = true;
@@ -220,6 +229,10 @@ public class GameManager {
         } else {
             switchTurn();
         }
+    }
+
+    public void setTableScreen(TableScreen tableScreen) {
+        this.tableScreen = tableScreen;
     }
 
     private boolean isBettingRoundClosed() {
@@ -289,6 +302,7 @@ public class GameManager {
         System.out.println("-------------------------------------------------");
 
         gameState = GameState.SHOWDOWN;
+        tableScreen.setBotDecisionTexture(null);
 
         if (player.chips <= 0 || bot.chips <= 0) {
             gameOver = true;

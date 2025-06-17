@@ -29,6 +29,10 @@ public class TableScreen implements Screen {
     private Texture tableBg, avatarPlayer, avatarBot, cardBack, dealer;
     private Texture playerCard1, playerCard2, botCard1, botCard2;
     private Texture sliderBg, sliderKnob, confirmRaise;
+    private Texture label, botLabel;
+    private Texture statsPlayer, statsBot;
+    private Texture actionBotCall, actionBotRaise, actionBotFold, actionBotCheck;
+    private Texture currentAction;
     private List<Texture> communityTextures = new ArrayList<>();
 
     private Stage stage;
@@ -66,13 +70,23 @@ public class TableScreen implements Screen {
 
             MusicManager.getInstance().playGameMusic();
 
-            gameManager = new GameManager();
+            gameManager = new GameManager(this);
             gameManager.startNewHand();
 
             tableBg = new Texture(Gdx.files.internal("poker_table_bg.png"));
             avatarPlayer = new Texture(Gdx.files.internal("avatars/" + selectedAvatar + ".png"));
             avatarBot = new Texture(Gdx.files.internal("avatars/3.png"));
             cardBack = new Texture(Gdx.files.internal("cards/card_back.png"));
+            label = new Texture(Gdx.files.internal("avatars/"+selectedAvatar+"label.png"));
+            botLabel = new Texture(Gdx.files.internal("avatars/botLabel.png"));
+            statsPlayer = new Texture(Gdx.files.internal("stats1.png"));
+            statsBot = new Texture(Gdx.files.internal("stats2.png"));
+
+            actionBotCall = new Texture(Gdx.files.internal("botAction/call.png"));
+            actionBotRaise = new Texture(Gdx.files.internal("botAction/raise.png"));
+            actionBotCheck = new Texture(Gdx.files.internal("botAction/check.png"));
+            actionBotFold = new Texture(Gdx.files.internal("botAction/fold.png"));
+            currentAction = null;
 
             sliderBg = new Texture(Gdx.files.internal("slider_bg.png"));
             sliderKnob = new Texture(Gdx.files.internal("slider_knob.png"));
@@ -88,6 +102,18 @@ public class TableScreen implements Screen {
             createNewHandButton();
             createRestartButton();
             updateCardTextures();
+
+            // Widoczność cheatów dla konkretnych postaci
+            if (selectedAvatar == 1) {
+                peekButton.setVisible(true);
+                cheatButton.setVisible(false);
+            } else if (selectedAvatar == 2) {
+                peekButton.setVisible(false);
+                cheatButton.setVisible(true);
+            } else {
+                peekButton.setVisible(false);
+                cheatButton.setVisible(false);
+            }
 
             initialized = true;
         }
@@ -113,7 +139,7 @@ public class TableScreen implements Screen {
         int xButton = 50;
         int yButton = 300;
 
-        checkButton.setPosition(xButton, yButton + 300);
+        checkButton.setPosition(xButton, yButton + 200);
         callButton.setPosition(xButton, yButton + 200);
         raiseButton.setPosition(xButton, yButton + 100);
         foldButton.setPosition(xButton, yButton);
@@ -164,7 +190,7 @@ public class TableScreen implements Screen {
     private void createCheatButton() {
         Texture cheatTex = new Texture(Gdx.files.internal("buttons/cheat.png"));
         cheatButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(cheatTex)));
-        cheatButton.setPosition(320, 20);
+        cheatButton.setPosition(850, 50);
         cheatButton.setVisible(false);
         cheatButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
@@ -186,7 +212,12 @@ public class TableScreen implements Screen {
             String cardTexturePath = player.hand.getCard(i).getTexturePath();
             Texture cardTexture = new Texture(Gdx.files.internal(cardTexturePath));
             ImageButton cardButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(cardTexture)));
-            cardButton.setPosition(250 + i * 190, 50);
+            int xPosition = 450 + i * 200;
+            int yPosition = 50;
+
+            cardButton.setPosition(xPosition, yPosition);
+            cardButton.setSize(162, 200);
+
             cardButton.addListener(new ClickListener() {
                 @Override public void clicked(InputEvent event, float x, float y) {
                     playClickSound();
@@ -227,7 +258,7 @@ public class TableScreen implements Screen {
     private void createPeekButton() {
         Texture peekTex = new Texture(Gdx.files.internal("buttons/peek.png"));
         peekButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(peekTex)));
-        peekButton.setPosition(420, 20);
+        peekButton.setPosition(850, 50);
         peekButton.setVisible(true);
         peekButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
@@ -251,7 +282,7 @@ public class TableScreen implements Screen {
             peekedBotCardImage.remove();
         }
         peekedBotCardImage = new Image(new Texture(Gdx.files.internal(card.getTexturePath())));
-        peekedBotCardImage.setPosition(900, 450);
+        peekedBotCardImage.setPosition(1320, 830);
         peekedBotCardImage.setSize(160, 200);
         stage.addActor(peekedBotCardImage);
 
@@ -287,13 +318,13 @@ public class TableScreen implements Screen {
     }
 
     private void createRestartButton() {
-        Texture restartTex = new Texture(Gdx.files.internal("buttons/confirm.png"));
+        Texture restartTex = new Texture(Gdx.files.internal("buttons/restart.png"));
         restartButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(restartTex)));
         restartButton.setPosition(900, 150);
         restartButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 playClickSound();
-                gameManager = new GameManager();
+                gameManager = new GameManager(TableScreen.this);
                 gameManager.startNewHand();
                 cheatUsed = false;
                 cheatCaught = false;
@@ -315,8 +346,8 @@ public class TableScreen implements Screen {
             new TextureRegionDrawable(new TextureRegion(sliderKnob))
         ));
         raiseSlider.setValue(20);
-        raiseSlider.setPosition(210, 400);
-        raiseSlider.setSize(300, 50);
+        raiseSlider.setPosition(180, 400);
+        raiseSlider.setSize(350, 50);
         stage.addActor(raiseSlider);
 
         raiseSlider.addListener(event -> {
@@ -325,7 +356,7 @@ public class TableScreen implements Screen {
         });
 
         confirmRaiseButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(confirmRaise)));
-        confirmRaiseButton.setPosition(530, 400);
+        confirmRaiseButton.setPosition(50, 400);
         confirmRaiseButton.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 playClickSound();
@@ -349,7 +380,7 @@ public class TableScreen implements Screen {
         updateCommunityCardTextures();
 
         // CheatButton pojawia się na początku rozdania, jeśli nie był użyty i nie jest showdown
-        if (!cheatUsed && gameManager.getGameState() != GameState.SHOWDOWN && !gameManager.isGameOver()) {
+        if (!cheatUsed && gameManager.getGameState() != GameState.SHOWDOWN && !gameManager.isGameOver() && selectedAvatar == 2) {
             cheatButton.setVisible(true);
         } else {
             cheatButton.setVisible(false);
@@ -378,9 +409,13 @@ public class TableScreen implements Screen {
         batch.begin();
         batch.draw(tableBg, 0, 0);
         batch.draw(avatarPlayer, 50, 50, 160, 200);
+        batch.draw(label, 50, 20, 160, 50);
+        batch.draw(statsPlayer, 250, 50, 160, 200);
         batch.draw(avatarBot, 1710, 830, 160, 200);
-        batch.draw(playerCard1, 250, 50, 160, 200);
-        batch.draw(playerCard2, 440, 50, 160, 200);
+        batch.draw(botLabel, 1710, 800, 160, 50);
+        batch.draw(statsBot, 1520, 830, 160, 200);
+        batch.draw(playerCard1, 450, 50, 160, 200);
+        batch.draw(playerCard2, 650, 50, 160, 200);
 
         if (gameManager.getGameState() == GameState.SHOWDOWN) {
             newHandButton.setVisible(true);
@@ -389,11 +424,11 @@ public class TableScreen implements Screen {
             raiseButton.setVisible(false);
             foldButton.setVisible(false);
             if (!gameManager.isShowdownAfterFold()) {
-                batch.draw(botCard1, 1520, 830, 160, 200);
-                batch.draw(botCard2, 1320, 830, 160, 200);
+                batch.draw(botCard1, 1320, 830, 160, 200);
+                batch.draw(botCard2, 1120, 830, 160, 200);
             } else {
-                batch.draw(cardBack, 1520, 830, 160, 200);
                 batch.draw(cardBack, 1320, 830, 160, 200);
+                batch.draw(cardBack, 1120, 830, 160, 200);
             }
         } else {
             newHandButton.setVisible(false);
@@ -403,24 +438,28 @@ public class TableScreen implements Screen {
             callButton.setVisible(currentBet != lastPlayerBet);
             raiseButton.setVisible(true);
             foldButton.setVisible(true);
-            batch.draw(cardBack, 1520, 830, 160, 200);
             batch.draw(cardBack, 1320, 830, 160, 200);
+            batch.draw(cardBack, 1120, 830, 160, 200);
         }
 
         for (int i = 0; i < communityTextures.size(); i++) {
             batch.draw(communityTextures.get(i), 465 + i * 200, 430, 192, 241);
         }
 
-        font.draw(batch, playerName + " chips: " + gameManager.getPlayerChips(), 50, 40);
-        font.draw(batch, "Bot chips: " + gameManager.getBotChips(), 1710, 820);
-        font.draw(batch, playerName + " bet: " + gameManager.getLastPlayerBet(), 300, 40);
-        font.draw(batch, "Bot bet: " + gameManager.getLastBotBet(), 1710, 740);
-        font.draw(batch, "Pula: " + gameManager.getPot(), 900, 600);
+        font.draw(batch, "" + gameManager.getPlayerChips(), 310, 200);
+        font.draw(batch, "" + gameManager.getBotChips(), 1580, 980);
+        font.draw(batch, "" + gameManager.getLastPlayerBet(), 310, 115);
+        font.draw(batch, "" + gameManager.getLastBotBet(), 1580, 895);
+        font.draw(batch, "CURRENT POT: " + gameManager.getPot(), 900, 860);
 
         if (gameManager.isPlayerSmallBlind()) {
             batch.draw(dealer, 50, 230);
         } else {
             batch.draw(dealer, 1710, 1010);
+        }
+
+        if (currentAction != null) {
+            batch.draw(currentAction, 1710, 750, 160, 50);
         }
 
         if (raiseSlider != null && raiseSlider.hasParent()) {
@@ -465,7 +504,8 @@ public class TableScreen implements Screen {
     }
 
     public void startNewGame() {
-        gameManager = new GameManager();
+        gameManager = new GameManager(TableScreen.this);
+        gameManager.setTableScreen(this);
         gameManager.startNewHand();
         cheatUsed = false;
         cheatCaught = false;
@@ -475,6 +515,20 @@ public class TableScreen implements Screen {
 
     public void regainInputFocus() {
         Gdx.input.setInputProcessor(stage);
+    }
+
+    public void setBotDecisionTexture(String decision) {
+        if (decision == null) {
+            currentAction = null;
+            return;
+        }
+        switch (decision) {
+            case "CHECK" -> currentAction = actionBotCheck;
+            case "CALL" -> currentAction = actionBotCall;
+            case "RAISE" -> currentAction = actionBotRaise;
+            case "FOLD" -> currentAction = actionBotFold;
+            default -> currentAction = null;
+        }
     }
 
     // --- WYMAGANE PRZEZ Screen ---
